@@ -1,10 +1,5 @@
 use rand::prelude::*;
 
-struct Door {
-    id: i32,
-    winning: bool
-}
-
 fn main() {
     let mut doors:[bool; 3] = [false, false, false];
 
@@ -16,7 +11,7 @@ fn main() {
     print!("\t\tMonty Hall\n");
     print!("there are 3 doors please choose a door you think is the winner\n");
     let mut line: String = String::new();
-    let mut input = std::io::stdin().read_line(&mut line).unwrap();
+    let mut _input = std::io::stdin().read_line(&mut line).unwrap();
 
     let mut choice: i32 = (line.trim().parse::<i32>().unwrap())-1;
 
@@ -56,12 +51,12 @@ fn main() {
 
     }
 
-    print!("door {} has been opened and was not the winner\n", other);
+    print!("door {} has been opened and was not the winner\n", open+1);
 
     print!("would you like to switch your guess to door {}?\n", other+1);
     
     line = String::new();
-    input = std::io::stdin().read_line(&mut line).unwrap();
+    _input = std::io::stdin().read_line(&mut line).unwrap();
 
     if line.trim() == "y" {
         let inter: i32 = other;
