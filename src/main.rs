@@ -1,14 +1,17 @@
+use rand::prelude::*;
+
 struct Door {
     id: i32,
     winning: bool
 }
 
 fn main() {
-    let door1: Door = Door {id: 0, winning: false};
-    let door2: Door = Door {id: 1, winning: false};
-    let door3: Door = Door {id: 2, winning: true};
+    let mut doors:[bool; 3] = [false, false, false];
 
-    let doors:[Door; 3] = [door1, door2, door3];
+    let mut rng = rand::thread_rng();
+    let x: usize = rng.gen_range(0..2);
+
+    doors[x] = true;
 
     print!("\t\tMonty Hall\n");
     print!("there are 3 doors please choose a door you think is the winner\n");
@@ -21,7 +24,7 @@ fn main() {
     let mut other: i32 = 1;
 
     if choice == 0 {
-        if doors[1].winning == false {
+        if doors[1] == false {
             open = 1; 
             other = 2;
         }
@@ -31,7 +34,7 @@ fn main() {
         }
     }
     else if choice == 1 {
-        if doors[0].winning == false {
+        if doors[0] == false {
             open = 0;
             other = 2;
         }
@@ -42,7 +45,7 @@ fn main() {
 
     }
     else if choice == 2 {
-        if doors[1].winning == false {
+        if doors[1] == false {
             open = 1;
             other = 0;
         }
@@ -66,7 +69,7 @@ fn main() {
         other = inter;
     }
 
-    if doors[choice as usize].winning == true {
+    if doors[choice as usize] == true {
         print!("you chose door {} which was the winning door\n", choice+1);
     }
     else {
