@@ -1,9 +1,10 @@
 use rand::prelude::*;
 use std::process::exit;
+use colored::*;
 
 fn main() {
-    print!("\t\tMonty Hall\n");
-    print!("press q at any time to quit\n");
+    print!("{}","\n\nMonty Hall\n".cyan());
+    print!("{}","press q at any time to quit\n".yellow());
 
 
 
@@ -15,7 +16,7 @@ fn main() {
 
         doors[x] = true;
 
-        print!("------------------------------------------------------------------\n");
+        print!("{}","------------------------------------------------------------------\n".cyan());
         print!("there are 3 doors please choose a door you think is the winner\n\n");
         let mut line: String = String::new();
         let mut _input = std::io::stdin().read_line(&mut line).unwrap();
@@ -24,11 +25,27 @@ fn main() {
             exit(0);
         }
 
-        let mut choice: i32 = (line.trim().parse::<i32>().unwrap())-1;
+        //use match to continue to next loop if input not a number
+        let mut choice: i32 = match line.trim().parse::<i32>() {
+            Ok(num) => num,
+            Err(_) => continue
+        };
+
+
+        //if the choice is not one of the 3 doors continue
+        if 0 >= choice || choice >3 {
+            print!("{}", "invalid door\n".red());
+            continue;
+        }
+
+        choice = choice - 1;
+
+        print!("\nyou picked door {}\n\n", choice+1);
 
         let mut open: i32 = 0;
         let mut other: i32 = 1;
 
+        //depending on chosen door open the corisponding losing door
         if choice == 0 {
             if doors[1] == false {
                 open = 1; 
@@ -79,10 +96,12 @@ fn main() {
         }
 
         if doors[choice as usize] == true {
-            print!("you chose door {} which was the winning door\n\n", choice+1);
+            print!("**********************************************************\n");
+            print!("{} {} {}","you chose door".green(), (choice+1).to_string().green(), "which was the winning door\n".green());
+            print!("**********************************************************\n\n\n");
         }
         else {
-            print!("you chose door {} which was not the winning door. door {} was the winning door\n\n\n", choice+1, other+1);
+            print!("\n{} {} {} {} {}","you chose door".red(), (choice+1).to_string().red(), "which was not the winning door. door".red(),(other+1).to_string().red(), "was the winning door\n\n\n".red());
         }
     } 
 }
