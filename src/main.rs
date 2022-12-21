@@ -6,8 +6,6 @@ fn main() {
     print!("{}","\n\nMonty Hall\n".cyan());
     print!("{}","press q at any time to quit\n".yellow());
 
-
-
     loop {
         let mut doors:[bool; 3] = [false, false, false];
 
@@ -17,7 +15,9 @@ fn main() {
         doors[x] = true;
 
         print!("{}","------------------------------------------------------------------\n".cyan());
-        print!("there are 3 doors please choose a door you think is the winner\n\n");
+        print!("{}","there are 3 doors please choose a door you think is the winner\n\n".yellow());
+        print!("{}","Door 1, Door 2, Door 3\n".cyan());
+
         let mut line: String = String::new();
         let mut _input = std::io::stdin().read_line(&mut line).unwrap();
 
@@ -40,7 +40,7 @@ fn main() {
 
         choice = choice - 1;
 
-        print!("\nyou picked door {}\n\n", choice+1);
+        print!("\n{} {} \n\n", "you picked door ".blue(), (choice+1).to_string().blue());
 
         let mut open: i32 = 0;
         let mut other: i32 = 1;
@@ -79,9 +79,9 @@ fn main() {
 
         }
 
-        print!("door {} has been opened and was not the winner\n\n", open+1);
+        print!("{} {} {}","door".cyan(), (open+1).to_string().cyan(), " has been opened and was not the winner\n\n".cyan());
 
-        print!("would you like to switch your guess to door {}?\n\n", other+1);
+        print!("{} {} {} {}\n\n", "would you like to switch your guess from door ".yellow(), (choice + 1).to_string().yellow(), " to door ".yellow(), (other+1).to_string().yellow() );
     
         line = String::new();
         _input = std::io::stdin().read_line(&mut line).unwrap();
