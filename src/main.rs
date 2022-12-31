@@ -1,7 +1,9 @@
 use rand::prelude::*;
 use std::process::exit;
 use colored::*;
+use serde_derive::{Deserialize, Serialize};
 
+#[derive(Deserialize, Serialize, Debug)]
 struct Score {
     correct: f32,
     incorrect: f32,
@@ -11,7 +13,7 @@ struct Score {
     incorrect_switch: f32,
     correct_percent: f32,
     correct_switch_percent: f32,
-    correct_stay_percent: f32
+    correct_stay_percent: f32,
 }
 
 fn main() {
@@ -19,6 +21,7 @@ fn main() {
     print!("{}","press q at any time to quit\n".yellow());
 
     let mut score = Score {correct: 0., incorrect: 0., correct_stay: 0., incorrect_stay: 0., correct_switch: 0., incorrect_switch: 0., correct_percent: 0., correct_switch_percent: 0., correct_stay_percent: 0. }; 
+
 
     loop {
         let mut doors:[bool; 3] = [false, false, false];
@@ -38,7 +41,7 @@ fn main() {
         let mut _input = std::io::stdin().read_line(&mut line).unwrap();
 
         if line.trim().eq("q") {
-            exit(0);
+            save_and_exit(&mut score);
         }
 
         //use match to continue to next loop if input not a number
@@ -109,7 +112,7 @@ fn main() {
             other = inter;
         }
         else if line.trim().eq("q") {
-            exit(0);
+            save_and_exit(&mut score);
         }
 
         if doors[choice as usize] == true {
@@ -151,4 +154,14 @@ fn main() {
 
         println!("Correct: {}, Incorrect {}, total Correct: {}%, Correct_stay: {}, Incorrect_stay: {}, Stay percent: {}%, Correct_switch: {}, Incorrect_switch: {}, Correct_switch_percent: {}%\n", score.correct, score.incorrect, score.correct_percent*100., score.correct_stay, score.incorrect_stay, score.correct_stay_percent*100., score.correct_switch, score.incorrect_switch, score.correct_switch_percent*100.);
     } 
+}
+
+#[warn(unused_must_use)]
+fn save_and_exit(score:&mut Score) {
+    std::fs::write(
+    "saves/save.json",
+    serde_json::to_string_pretty(&score).unwrap(),
+    );
+
+    exit(0);
 }

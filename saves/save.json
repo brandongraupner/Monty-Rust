@@ -1,0 +1,11 @@
+{
+  "correct": 0.0,
+  "incorrect": 0.0,
+  "correct_stay": 0.0,
+  "incorrect_stay": 0.0,
+  "correct_switch": 0.0,
+  "incorrect_switch": 0.0,
+  "correct_percent": 0.0,
+  "correct_switch_percent": 0.0,
+  "correct_stay_percent": 0.0
+}
