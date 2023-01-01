@@ -1,6 +1,7 @@
 use rand::prelude::*;
 use std::process::exit;
 use colored::*;
+use std::io::Write;
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -17,8 +18,8 @@ struct Score {
 }
 
 fn main() {
-    print!("{}","\n\nMonty Hall\n".cyan());
-    print!("{}","press q at any time to quit\n".yellow());
+    println!("{}","\n\nMonty Hall\n".cyan());
+    println!("{}","press q at any time to quit and s to save\n".yellow());
 
     let mut score = Score {correct: 0., incorrect: 0., correct_stay: 0., incorrect_stay: 0., correct_switch: 0., incorrect_switch: 0., correct_percent: 0., correct_switch_percent: 0., correct_stay_percent: 0. }; 
 
@@ -32,15 +33,18 @@ fn main() {
         let mut switched:bool = false;
 
         doors[x] = true;
+        
+        //TODO make main menu with load play and exit options 
 
-        print!("{}","------------------------------------------------------------------\n".cyan());
-        print!("{}","there are 3 doors please choose a door you think is the winner\n\n".yellow());
-        print!("{}","Door 1, Door 2, Door 3\n".cyan());
-
+        println!("{}","------------------------------------------------------------------\n".cyan());
+        println!("{}","there are 3 doors please choose a door you think is the winner\n\n".yellow());
+        println!("{}","Door 1, Door 2, Door 3\n".cyan());
+        
+        std::io::stdout().flush().unwrap();
         let mut line: String = String::new();
         let mut _input = std::io::stdin().read_line(&mut line).unwrap();
 
-        if line.trim().eq("q") {
+        if line.trim().eq("q") || line.trim().eq("s") {
             save_and_exit(&mut score);
         }
 
@@ -53,13 +57,13 @@ fn main() {
 
         //if the choice is not one of the 3 doors continue
         if 0 >= choice || choice >3 {
-            print!("{}", "invalid door\n".red());
+            println!("{}", "invalid door\n".red());
             continue;
         }
 
         choice = choice - 1;
 
-        print!("\n{} {} \n\n", "you picked door ".blue(), (choice+1).to_string().blue());
+        println!("\n{} {} \n\n", "you picked door ".blue(), (choice+1).to_string().blue());
 
         let mut open: i32 = 0;
         let mut other: i32 = 1;
@@ -98,10 +102,11 @@ fn main() {
 
         }
 
-        print!("{} {} {}","door".cyan(), (open+1).to_string().cyan(), " has been opened and was not the winner\n\n".cyan());
+        println!("{} {} {}","door".cyan(), (open+1).to_string().cyan(), " has been opened and was not the winner\n\n".cyan());
 
-        print!("{} {} {} {}\n\n", "would you like to switch your guess from door ".yellow(), (choice + 1).to_string().yellow(), " to door ".yellow(), (other+1).to_string().yellow() );
+        println!("{} {} {} {}\n\n", "would you like to switch your guess from door ".yellow(), (choice + 1).to_string().yellow(), " to door ".yellow(), (other+1).to_string().yellow() );
     
+        std::io::stdout().flush().unwrap();
         line = String::new();
         _input = std::io::stdin().read_line(&mut line).unwrap();
 
@@ -111,7 +116,7 @@ fn main() {
             choice = other;
             other = inter;
         }
-        else if line.trim().eq("q") {
+        else if line.trim().eq("q") || line.trim().eq("s") {
             save_and_exit(&mut score);
         }
 
@@ -129,12 +134,12 @@ fn main() {
                 score.correct_stay_percent = (score.correct_stay / (score.incorrect_stay+score.correct_stay)).into();
             }
 
-            print!("**********************************************************\n");
-            print!("{} {} {}","you chose door".green(), (choice+1).to_string().green(), "which was the winning door\n".green());
-            print!("**********************************************************\n\n\n");
+            println!("**********************************************************\n");
+            println!("{} {} {}","you chose door".green(), (choice+1).to_string().green(), "which was the winning door\n".green());
+            println!("**********************************************************\n\n\n");
         }
         else {
-            print!("\n{} {} {} {} {}","you chose door".red(), (choice+1).to_string().red(), "which was not the winning door. door".red(),(other+1).to_string().red(), "was the winning door\n\n\n".red());
+            println!("\n{} {} {} {} {}","you chose door".red(), (choice+1).to_string().red(), "which was not the winning door. door".red(),(other+1).to_string().red(), "was the winning door\n\n\n".red());
             score.incorrect +=1.;
 
             //if the player has switched add and incorrect switch and calculate
@@ -158,10 +163,21 @@ fn main() {
 
 #[warn(unused_must_use)]
 fn save_and_exit(score:&mut Score) {
-    std::fs::write(
-    "saves/save.json",
-    serde_json::to_string_pretty(&score).unwrap(),
-    );
+    println!("enter the name for your save or enter nothing to not save\n");
+    std::io::stdout().flush().unwrap();
+    let mut line = String::new();
+    let _input = std::io::stdin().read_line(&mut line).unwrap();
 
+    if !line.trim().eq("") {
+        let mut save_file = "saves/".to_owned();
+        save_file.push_str(line.trim());
+        save_file.push_str(".json");
+        std::fs::write(
+        save_file,
+        serde_json::to_string_pretty(&score).unwrap(),
+        );
+    }
     exit(0);
 }
+
+//TODO make function to load json save files

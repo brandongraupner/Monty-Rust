@@ -1,1 +1,1 @@
-/home/brandon/projects/monty-rust/target/debug/montyhall: /home/brandon/projects/monty-rust/src/main.rs
+/home/brandon/rocket/code/rust/montyhall/target/debug/montyhall: /home/brandon/rocket/code/rust/montyhall/src/main.rs
