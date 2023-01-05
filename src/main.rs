@@ -1,8 +1,10 @@
 use rand::prelude::*;
 use std::process::exit;
 use colored::*;
-use std::io::Write;
+use std::io::*;
 use serde_derive::{Deserialize, Serialize};
+use std::fs::File;
+use serde_json::{Value};
 
 #[derive(Deserialize, Serialize, Debug)]
 struct Score {
@@ -19,7 +21,7 @@ struct Score {
 
 fn main() {
     println!("{}","\n\nMonty Hall\n".cyan());
-    println!("{}","press q at any time to quit and s to save\n".yellow());
+    println!("{}","press q at any time to quit and s to save and l to load\n".yellow());
 
     let mut score = Score {correct: 0., incorrect: 0., correct_stay: 0., incorrect_stay: 0., correct_switch: 0., incorrect_switch: 0., correct_percent: 0., correct_switch_percent: 0., correct_stay_percent: 0. }; 
 
@@ -46,6 +48,9 @@ fn main() {
 
         if line.trim().eq("q") || line.trim().eq("s") {
             save_and_exit(&mut score);
+        }
+        else if line.trim().eq("l") {
+            score = load_save();
         }
 
         //use match to continue to next loop if input not a number
@@ -119,6 +124,9 @@ fn main() {
         else if line.trim().eq("q") || line.trim().eq("s") {
             save_and_exit(&mut score);
         }
+        else if line.trim().eq("l") {
+            score = load_save();
+        }
 
         if doors[choice as usize] == true {
             score.correct +=1.;
@@ -155,19 +163,23 @@ fn main() {
             }
         }
 
+        //calculate percentage of correct answers
         score.correct_percent = (score.correct / (score.incorrect+score.correct)).into();
 
-        println!("Correct: {}, Incorrect {}, total Correct: {}%, Correct_stay: {}, Incorrect_stay: {}, Stay percent: {}%, Correct_switch: {}, Incorrect_switch: {}, Correct_switch_percent: {}%\n", score.correct, score.incorrect, score.correct_percent*100., score.correct_stay, score.incorrect_stay, score.correct_stay_percent*100., score.correct_switch, score.incorrect_switch, score.correct_switch_percent*100.);
+        print_score(&score);
     } 
 }
 
+//either saves the score data to a file or exits
 #[warn(unused_must_use)]
 fn save_and_exit(score:&mut Score) {
     println!("enter the name for your save or enter nothing to not save\n");
     std::io::stdout().flush().unwrap();
     let mut line = String::new();
+    //get user input
     let _input = std::io::stdin().read_line(&mut line).unwrap();
 
+    //if player has entered a value save the data
     if !line.trim().eq("") {
         let mut save_file = "saves/".to_owned();
         save_file.push_str(line.trim());
@@ -180,4 +192,36 @@ fn save_and_exit(score:&mut Score) {
     exit(0);
 }
 
-//TODO make function to load json save files
+fn load_save() -> Score{
+    println!("enter name of save you want to load(to not include file type)");
+
+    std::io::stdout().flush().unwrap();
+    let mut line = String::new();
+    let mut _input = std::io::stdin().read_line(&mut line).unwrap();
+
+    let file_name = line.trim();
+
+    let mut name: String = "saves/".to_owned();
+    //adds save path to file_name
+    name.push_str(file_name);
+    name.push_str(".json");
+    let mut file = File::open(name).unwrap();
+    let mut data = String::new();
+
+    //reads from file to data
+    file.read_to_string(&mut data).unwrap();
+
+    //convers the str to json
+    let mut json: Value = serde_json::from_str(&data).unwrap();
+
+    //creates a Score struct with the values read from the save file
+    let score = Score {correct: json["correct"].to_string().parse::<f32>().unwrap(), incorrect: json["incorrect"].to_string().parse::<f32>().unwrap(), correct_stay: json["correct_stay"].to_string().parse::<f32>().unwrap(), incorrect_stay: json["incorrect_stay"].to_string().parse::<f32>().unwrap(), correct_switch: json["correct_switch"].to_string().parse::<f32>().unwrap(), incorrect_switch: json["incorrect_switch"].to_string().parse::<f32>().unwrap(), correct_percent: json["correct_percent"].to_string().parse::<f32>().unwrap(), correct_switch_percent: json["correct_switch_percent"].to_string().parse::<f32>().unwrap(), correct_stay_percent: json["correct_stay_percent"].to_string().parse::<f32>().unwrap()};
+    
+    print_score(&score);
+    return score;
+}
+
+//prints all values from the score
+fn print_score(score: &Score) {
+        println!("Correct: {}, Incorrect {}, total Correct: {}%, Correct_stay: {}, Incorrect_stay: {}, Stay percent: {}%, Correct_switch: {}, Incorrect_switch: {}, Correct_switch_percent: {}%\n", score.correct, score.incorrect, score.correct_percent*100., score.correct_stay, score.incorrect_stay, score.correct_stay_percent*100., score.correct_switch, score.incorrect_switch, score.correct_switch_percent*100.);
+}
