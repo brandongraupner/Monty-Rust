@@ -20,12 +20,30 @@ struct Score {
 }
 
 fn main() {
-    println!("{}","\n\nMonty Hall\n".cyan());
-    println!("{}","press q at any time to quit and s to save and l to load\n".yellow());
+    loop {
+        let mut score = Score {correct: 0., incorrect: 0., correct_stay: 0., incorrect_stay: 0., correct_switch: 0., incorrect_switch: 0., correct_percent: 0., correct_switch_percent: 0., correct_stay_percent: 0. }; 
 
-    let mut score = Score {correct: 0., incorrect: 0., correct_stay: 0., incorrect_stay: 0., correct_switch: 0., incorrect_switch: 0., correct_percent: 0., correct_switch_percent: 0., correct_stay_percent: 0. }; 
+        println!("Welcome to Monty Rust\n The Monty Hall problem game made in rust\n");
+        println!("Instructions:\n Play: 'p'\n Load game: 'l'\n Quit: \n");
 
+        std::io::stdout().flush().unwrap();
+        let mut line: String = String::new();
+        let mut _input = std::io::stdin().read_line(&mut line).unwrap();
+    
+        if line.trim().eq("q") {
+            quit(0);
+        }
+        else if line.trim().eq("l") {
+            load_save();
+        }
+        else if line.tirm().eq("p") {
+            game_loop(score);
+        }
+    }
+}
 
+//handles main game logic
+fn game_loop(mut score: Score) {
     loop {
         let mut doors:[bool; 3] = [false, false, false];
 
