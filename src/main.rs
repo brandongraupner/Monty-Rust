@@ -30,13 +30,14 @@ fn main() {
         let mut line: String = String::new();
         let mut _input = std::io::stdin().read_line(&mut line).unwrap();
     
+        //depending on user input execute action
         if line.trim().eq("q") {
-            quit(0);
+            exit(0);
         }
         else if line.trim().eq("l") {
-            load_save();
+            score = load_save();
         }
-        else if line.tirm().eq("p") {
+        else if line.trim().eq("p") {
             game_loop(score);
         }
     }
@@ -88,42 +89,11 @@ fn game_loop(mut score: Score) {
 
         println!("\n{} {} \n\n", "you picked door ".blue(), (choice+1).to_string().blue());
 
-        let mut open: i32 = 0;
-        let mut other: i32 = 1;
+        
 
-        //depending on chosen door open the corisponding losing door
-        if choice == 0 {
-            if doors[1] == false {
-                open = 1; 
-                other = 2;
-            }
-            else {
-                open = 2;
-                other = 1;
-            }
-        }
-        else if choice == 1 {
-            if doors[0] == false {
-                open = 0;
-                other = 2;
-            }
-            else {
-                open = 2;
-                other = 0;
-            }
-
-        }
-        else if choice == 2 {
-            if doors[1] == false {
-                open = 1;
-                other = 0;
-            }
-            else {
-                open = 0;
-                other = 1;
-            }
-
-        }
+        let open_other = chose_door(choice, doors);
+        let open:i32 = open_other.0;
+        let mut other:i32 = open_other.1;
 
         println!("{} {} {}","door".cyan(), (open+1).to_string().cyan(), " has been opened and was not the winner\n\n".cyan());
 
@@ -188,6 +158,40 @@ fn game_loop(mut score: Score) {
     } 
 }
 
+//choses which door to open based on which door the user picks
+fn chose_door(choice: i32, doors: [bool; 3]) -> (i32, i32){
+
+    let mut open_other: (i32, i32) = (0,0);
+
+    //depending on chosen door open the corisponding losing door
+    if choice == 0 {
+        if doors[1] == false {
+            open_other = (1,2);
+        }
+        else {
+            open_other = (2,1);
+        }
+    }
+    else if choice == 1 {
+        if doors[0] == false {
+            open_other = (0,2);
+        }
+        else {
+            open_other = (2,0);
+        }
+    }
+    else if choice == 2 {
+        if doors[1] == false {
+            open_other = (1,0);
+        }
+        else {
+            open_other = (0,1);
+        }
+    }
+
+    return open_other;
+}
+
 //either saves the score data to a file or exits
 #[warn(unused_must_use)]
 fn save_and_exit(score:&mut Score) {
@@ -230,7 +234,7 @@ fn load_save() -> Score{
     file.read_to_string(&mut data).unwrap();
 
     //convers the str to json
-    let mut json: Value = serde_json::from_str(&data).unwrap();
+    let json: Value = serde_json::from_str(&data).unwrap();
 
     //creates a Score struct with the values read from the save file
     let score = Score {correct: json["correct"].to_string().parse::<f32>().unwrap(), incorrect: json["incorrect"].to_string().parse::<f32>().unwrap(), correct_stay: json["correct_stay"].to_string().parse::<f32>().unwrap(), incorrect_stay: json["incorrect_stay"].to_string().parse::<f32>().unwrap(), correct_switch: json["correct_switch"].to_string().parse::<f32>().unwrap(), incorrect_switch: json["incorrect_switch"].to_string().parse::<f32>().unwrap(), correct_percent: json["correct_percent"].to_string().parse::<f32>().unwrap(), correct_switch_percent: json["correct_switch_percent"].to_string().parse::<f32>().unwrap(), correct_stay_percent: json["correct_stay_percent"].to_string().parse::<f32>().unwrap()};
