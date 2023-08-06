@@ -105,7 +105,7 @@ fn game_loop(mut score: Score) {
             (choice + 1).to_string().blue()
         );
 
-        let open_other = chose_door(choice, doors);
+        let open_other = choose_door(choice, doors);
         let open: i32 = open_other.0;
         let mut other: i32 = open_other.1;
 
@@ -195,8 +195,8 @@ fn game_loop(mut score: Score) {
     }
 }
 
-//choses which door to open based on which door the user picks
-fn chose_door(choice: i32, doors: [bool; 3]) -> (i32, i32) {
+//chooses which door to open based on which door the user picks
+fn choose_door(choice: i32, doors: [bool; 3]) -> (i32, i32) {
     let mut open_other: (i32, i32) = (0, 0);
 
     //depending on chosen door open the corisponding losing door
